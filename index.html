@@ -4,7 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cassandre & Marc-Alban - Mariage</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         body {
             margin: 0;
@@ -12,42 +16,133 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            background: #f8f4f0;
-            font-family: Arial, sans-serif; /* Changement de police */
-            overflow: hidden; /* Empêche le défilement */
+            background: #fdf2f8;
+            font-family: 'Cormorant Garamond', serif;
+            overflow: hidden;
+            perspective: 1500px;
+            position: relative;
+        }
+
+        .background-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .flower {
+            position: fixed;
+            font-size: 20px;
+            color: rgba(244, 114, 182, 0.8);
+            animation: float 7s ease-in-out infinite;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            z-index: 2;
+            pointer-events: none;
+            will-change: transform;
+        }
+
+        .firework {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            animation: explode 1s ease-out forwards;
+        }
+
+        .firework::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, #ff69b4, #ff1493);
+            border-radius: 50%;
+            animation: particle 1s ease-out forwards;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translate(var(--startX), var(--startY)) rotate(0deg) scale(0.3);
+                opacity: 0;
+            }
+            15% {
+                opacity: 1;
+                transform: translate(var(--midX), var(--midY)) rotate(var(--rotate)) scale(1);
+            }
+            85% {
+                opacity: 1;
+                transform: translate(var(--endX), var(--endY)) rotate(calc(var(--rotate) * 2)) scale(1);
+            }
+            100% {
+                transform: translate(var(--endX), var(--endY)) rotate(calc(var(--rotate) * 2)) scale(0.3);
+                opacity: 0;
+            }
+        }
+
+        @keyframes explode {
+            0% {
+                transform: translateY(100vh) scale(0.1);
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(var(--moveY)) scale(1);
+                opacity: 0;
+            }
+        }
+
+        @keyframes particle {
+            0% {
+                transform: scale(1);
+            }
+            100% {
+                transform: scale(30);
+                opacity: 0;
+            }
         }
 
         .container {
             position: relative;
-            width: 450px; /* Taille augmentée */
-            height: 340px; /* Taille augmentée */
+            width: 450px;
+            height: 340px;
+            transform-style: preserve-3d;
+            z-index: 1;
         }
 
-        /* Enveloppe complète */
         .envelope {
             width: 100%;
             height: 100%;
-            background: #f0e6d8;
+            background: linear-gradient(145deg, #f0e6d8, #e6dccf);
             position: relative;
             border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
             z-index: 1;
             cursor: pointer;
+            transition: transform 0.5s ease, box-shadow 0.5s ease;
+            transform-style: preserve-3d;
         }
 
-        /* Texte centré dans l'enveloppe */
+        .envelope:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+        }
+
         .envelope-text {
             position: absolute;
-            top: 58%; /* Ajusté pour être sous le rabat */
+            top: 58%;
             left: 50%;
             transform: translate(-50%, -50%);
             text-align: center;
-            font-size: 22px;
+            font-size: 24px;
             color: #2c1810;
             z-index: 3;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+            transition: opacity 0.3s ease;
         }
 
-        /* Rabat de l'enveloppe */
         .envelope::before {
             content: '';
             position: absolute;
@@ -57,35 +152,35 @@
             height: 50%;
             background: linear-gradient(145deg, #e6dccf, #d4c4b2);
             clip-path: polygon(0 0, 100% 0, 50% 100%);
-            transition: transform 0.8s ease;
+            transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1);
             transform-origin: top;
             z-index: 2;
             border-top-left-radius: 15px;
             border-top-right-radius: 15px;
+            box-shadow: 0 -5px 15px rgba(0,0,0,0.1);
         }
 
         .envelope.opened::before {
-            transform: rotateX(180deg); /* S'ouvre vers l'avant */
+            transform: rotateX(180deg) translateY(10px);
         }
 
-        /* Carte avec les deux images */
         .card-container {
             width: 100%;
-            height: 200%; /* Ajuste la hauteur pour la sortie fluide */
+            height: 200%;
             position: absolute;
-            perspective: 1000px;
-            top: -90px; /* Légèrement remontée */
+            perspective: 2000px;
+            top: -90px;
             left: 0;
-            transform: translateY(100%);
-            transition: transform 1s ease, opacity 0.8s ease;
+            transform: translateY(100%) translateZ(-50px);
+            transition: all 1.5s cubic-bezier(0.4, 0, 0.2, 1);
             opacity: 0;
-            z-index: 0; /* Derrière l'enveloppe */
+            z-index: 0;
         }
 
         .envelope.opened + .card-container {
-            transform: translateY(-10%);
+            transform: translateY(-10%) translateZ(50px);
             opacity: 1;
-            z-index: 3; /* Passe devant l'enveloppe */
+            z-index: 3;
         }
 
         .card {
@@ -101,7 +196,6 @@
             transform: rotateY(180deg);
         }
 
-        /* Faces de la carte */
         .front, .back {
             position: absolute;
             width: 100%;
@@ -109,19 +203,19 @@
             backface-visibility: hidden;
             border-radius: 15px;
             overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
 
         .front img, .back img {
             width: 100%;
             height: 100%;
-            object-fit: contain; /* Montre l'image en entier */
+            object-fit: cover;
         }
 
         .back {
             transform: rotateY(180deg);
         }
 
-        /* Flèche d'indication */
         .hint-arrow {
             position: absolute;
             bottom: -50px;
@@ -137,7 +231,7 @@
         }
 
         .hint-arrow:before {
-            content: '↻'; /* Icône flèche */
+            content: '↻';
             display: block;
             font-size: 30px;
         }
@@ -147,57 +241,82 @@
         }
 
         .hint-arrow.to-button {
-            font-size: 16px;
-            padding: 10px 20px;
-            background: #e6dccf; /* Couleur beige */
-            color: #2c1810; /* Texte marron */
+            font-size: 18px;
+            padding: 12px 30px;
+            background: linear-gradient(145deg, #f472b6, #ec4899);
+            color: white;
             border: none;
             border-radius: 30px;
             cursor: pointer;
-            animation: none; /* Supprime l'animation de la flèche */
+            box-shadow: 0 5px 15px rgba(236, 72, 153, 0.3);
+            transition: all 0.3s ease;
+            animation: pulse 2s infinite;
+            opacity: 1;
+            font-weight: 600;
+            letter-spacing: 0.5px;
         }
 
         .hint-arrow.to-button:hover {
-            background: #d4c4b2; /* Ton beige plus clair */
+            background: linear-gradient(145deg, #ec4899, #db2777);
+            box-shadow: 0 8px 20px rgba(236, 72, 153, 0.4);
+            transform: translateY(-2px) translateX(-50%);
         }
 
         .hide-before::before {
     display: none !important;
 }
 
-
         @keyframes fadeArrow {
             0% {
                 transform: translate(-50%, 10px);
+                opacity: 0.6;
             }
             100% {
                 transform: translate(-50%, 20px);
+                opacity: 1;
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 5px 15px rgba(236, 72, 153, 0.3);
+            }
+            50% {
+                box-shadow: 0 5px 25px rgba(236, 72, 153, 0.5);
+            }
+            100% {
+                box-shadow: 0 5px 15px rgba(236, 72, 153, 0.3);
             }
         }
 
         @media (max-width: 480px) {
             .container {
-                width: 300px;
-                height: 225px;
+                width: 90%;
+                max-width: 300px;
+                height: auto;
+                aspect-ratio: 4/3;
             }
 
-            .card {
-                width: 100%;
-                height: 100%;
+            .flower {
+                font-size: 16px;
             }
 
             .envelope-text {
-                font-size: 20px;
+                font-size: 18px;
             }
 
             .hint-arrow.to-button {
-                font-size: 14px;
-                padding: 8px 16px;
+                font-size: 16px;
+                padding: 10px 20px;
+                width: 80%;
+                max-width: 200px;
+                text-align: center;
             }
         }
     </style>
 </head>
 <body>
+    <div class="background-animation"></div>
     <div class="container">
         <div class="envelope">
             <div class="envelope-text">Cliquez pour ouvrir</div>
@@ -211,41 +330,108 @@
                     <img src="arriere.jpg" alt="Face arrière invitation">
                 </div>
             </div>
-            <div class="hint-arrow">Cliquez sur la carte </div>
+            <div class="hint-arrow">Cliquez sur la carte</div>
         </div>
     </div>
 
     <script>
-        // Animation d'ouverture de l'enveloppe
         document.querySelector('.envelope').addEventListener('click', function () {
             this.classList.toggle('opened');
             document.querySelector('.card-container').classList.add('show-hint');
         });
 
-        // Animation pour retourner la carte
         const card = document.querySelector('.card');
         const hintArrow = document.querySelector('.hint-arrow');
 
-        card.addEventListener('click', function () {
-    this.classList.toggle('opened');
-    if (this.classList.contains('opened')) {
-        // Transforme la flèche en bouton
-        hintArrow.classList.add('to-button');
-        hintArrow.textContent = 'Réserver';
-        hintArrow.onclick = function () {
-            window.location.href = 'https://millet-mairedellea.fr/';
-        };
+        function toggleCard() {
+            card.classList.toggle('opened');
+            if (card.classList.contains('opened')) {
+                hintArrow.classList.add('to-button');
+                hintArrow.textContent = 'Réserver';
+                hintArrow.onclick = function () {
+                    window.location.href = 'https://millet-mairedellea.fr/';
+                };
+            } else {
+                hintArrow.classList.remove('to-button');
+                hintArrow.textContent = 'Cliquez pour retourner la carte';
+                hintArrow.onclick = null;
+            }
+        }
 
-        // Masque le ::before en ajoutant une classe spécifique
-        document.querySelector('.hint-arrow').classList.add('hide-before');
-    } else {
-        // Réaffiche le ::before si la carte est refermée
-        document.querySelector('.hint-arrow').classList.remove('hide-before');
-        hintArrow.classList.remove('to-button');
-        hintArrow.textContent = 'Cliquez sur la carte';
-    }
-});
+        card.addEventListener('click', toggleCard);
+        hintArrow.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (hintArrow.classList.contains('to-button')) {
+                window.location.href = 'https://millet-mairedellea.fr/';
+            } else {
+                if (!card.classList.contains('opened')) {
+                    toggleCard();
+                }
+            }
+        });
 
+        // Animation des fleurs
+        const flowerIcons = ['🌸', '🌺', '🌹', '💐', '🌷', '💝', '💖', '💕', '💗'];
+        const MAX_FLOWERS = 10;
+        let activeFlowers = 0;
+        
+        function createFlower() {
+            if (activeFlowers >= MAX_FLOWERS) return;
+            
+            activeFlowers++;
+            const flower = document.createElement('div');
+            flower.className = 'flower';
+            flower.textContent = flowerIcons[Math.floor(Math.random() * flowerIcons.length)];
+            
+            // Position et trajectoire
+            const startAngle = Math.random() * Math.PI * 2;
+            const endAngle = startAngle + (Math.random() * Math.PI / 2 - Math.PI / 4);
+            const radius = Math.min(window.innerWidth, window.innerHeight) * 0.3;
+            
+            const startX = Math.random() * window.innerWidth;
+            const startY = Math.random() * window.innerHeight;
+            
+            // Points de contrôle pour une trajectoire courbe
+            const midX = startX + Math.cos(startAngle + Math.PI/4) * radius * 0.5;
+            const midY = startY + Math.sin(startAngle + Math.PI/4) * radius * 0.5;
+            const endX = startX + Math.cos(endAngle) * radius;
+            const endY = startY + Math.sin(endAngle) * radius;
+            
+            flower.style.left = '0';
+            flower.style.top = '0';
+            
+            flower.style.setProperty('--startX', `${startX}px`);
+            flower.style.setProperty('--startY', `${startY}px`);
+            flower.style.setProperty('--midX', `${midX}px`);
+            flower.style.setProperty('--midY', `${midY}px`);
+            flower.style.setProperty('--endX', `${endX}px`);
+            flower.style.setProperty('--endY', `${endY}px`);
+            flower.style.setProperty('--rotate', `${Math.random() * 360}deg`);
+            
+            document.querySelector('.background-animation').appendChild(flower);
+
+            flower.addEventListener('animationend', () => {
+                flower.remove();
+                activeFlowers--;
+            });
+        }
+
+        // Créer des fleurs à intervalles réguliers avec un délai variable
+        function scheduleNextFlower() {
+            const delay = Math.random() * 800 + 500; // Entre 500ms et 1300ms
+            setTimeout(() => {
+                createFlower();
+                scheduleNextFlower();
+            }, delay);
+        }
+
+        // Démarrer l'animation
+        scheduleNextFlower();
+
+        // Créer quelques fleurs au démarrage
+        for(let i = 0; i < Math.min(6, MAX_FLOWERS); i++) {
+            setTimeout(createFlower, Math.random() * 2000);
+        }
     </script>
 </body>
 </html>
