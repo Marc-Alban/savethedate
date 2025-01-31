@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cassandre & Marc-Alban - Mariage</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+    <style>
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #f8f4f0;
+            font-family: Arial, sans-serif; /* Changement de police */
+            overflow: hidden; /* Empêche le défilement */
+        }
+
+        .container {
+            position: relative;
+            width: 450px; /* Taille augmentée */
+            height: 340px; /* Taille augmentée */
+        }
+
+        /* Enveloppe complète */
+        .envelope {
+            width: 100%;
+            height: 100%;
+            background: #f0e6d8;
+            position: relative;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            z-index: 1;
+            cursor: pointer;
+        }
+
+        /* Texte centré dans l'enveloppe */
+        .envelope-text {
+            position: absolute;
+            top: 58%; /* Ajusté pour être sous le rabat */
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            font-size: 22px;
+            color: #2c1810;
+            z-index: 3;
+        }
+
+        /* Rabat de l'enveloppe */
+        .envelope::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 50%;
+            background: linear-gradient(145deg, #e6dccf, #d4c4b2);
+            clip-path: polygon(0 0, 100% 0, 50% 100%);
+            transition: transform 0.8s ease;
+            transform-origin: top;
+            z-index: 2;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+        }
+
+        .envelope.opened::before {
+            transform: rotateX(180deg); /* S'ouvre vers l'avant */
+        }
+
+        /* Carte avec les deux images */
+        .card-container {
+            width: 100%;
+            height: 200%; /* Ajuste la hauteur pour la sortie fluide */
+            position: absolute;
+            perspective: 1000px;
+            top: -90px; /* Légèrement remontée */
+            left: 0;
+            transform: translateY(100%);
+            transition: transform 1s ease, opacity 0.8s ease;
+            opacity: 0;
+            z-index: 0; /* Derrière l'enveloppe */
+        }
+
+        .envelope.opened + .card-container {
+            transform: translateY(-10%);
+            opacity: 1;
+            z-index: 3; /* Passe devant l'enveloppe */
+        }
+
+        .card {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .card.opened {
+            transform: rotateY(180deg);
+        }
+
+        /* Faces de la carte */
+        .front, .back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .front img, .back img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* Montre l'image en entier */
+        }
+
+        .back {
+            transform: rotateY(180deg);
+        }
+
+        /* Flèche d'indication */
+        .hint-arrow {
+            position: absolute;
+            bottom: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 20px;
+            color: #2c1810;
+            text-align: center;
+            opacity: 0;
+            animation: fadeArrow 1s infinite alternate;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+            cursor: default;
+        }
+
+        .hint-arrow:before {
+            content: '↻'; /* Icône flèche */
+            display: block;
+            font-size: 30px;
+        }
+
+        .card-container.show-hint .hint-arrow {
+            opacity: 1;
+        }
+
+        .hint-arrow.to-button {
+            font-size: 16px;
+            padding: 10px 20px;
+            background: #e6dccf; /* Couleur beige */
+            color: #2c1810; /* Texte marron */
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            animation: none; /* Supprime l'animation de la flèche */
+        }
+
+        .hint-arrow.to-button:hover {
+            background: #d4c4b2; /* Ton beige plus clair */
+        }
+
+        .hide-before::before {
+    display: none !important;
+}
+
+
+        @keyframes fadeArrow {
+            0% {
+                transform: translate(-50%, 10px);
+            }
+            100% {
+                transform: translate(-50%, 20px);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                width: 300px;
+                height: 225px;
+            }
+
+            .card {
+                width: 100%;
+                height: 100%;
+            }
+
+            .envelope-text {
+                font-size: 20px;
+            }
+
+            .hint-arrow.to-button {
+                font-size: 14px;
+                padding: 8px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="envelope">
+            <div class="envelope-text">Cliquez pour ouvrir</div>
+        </div>
+        <div class="card-container">
+            <div class="card">
+                <div class="front">
+                    <img src="image.jpg" alt="Face avant invitation">
+                </div>
+                <div class="back">
+                    <img src="arriere.jpg" alt="Face arrière invitation">
+                </div>
+            </div>
+            <div class="hint-arrow">Cliquez sur la carte </div>
+        </div>
+    </div>
+
+    <script>
+        // Animation d'ouverture de l'enveloppe
+        document.querySelector('.envelope').addEventListener('click', function () {
+            this.classList.toggle('opened');
+            document.querySelector('.card-container').classList.add('show-hint');
+        });
+
+        // Animation pour retourner la carte
+        const card = document.querySelector('.card');
+        const hintArrow = document.querySelector('.hint-arrow');
+
+        card.addEventListener('click', function () {
+    this.classList.toggle('opened');
+    if (this.classList.contains('opened')) {
+        // Transforme la flèche en bouton
+        hintArrow.classList.add('to-button');
+        hintArrow.textContent = 'Réserver';
+        hintArrow.onclick = function () {
+            window.location.href = 'https://millet-mairedellea.fr/';
+        };
+
+        // Masque le ::before en ajoutant une classe spécifique
+        document.querySelector('.hint-arrow').classList.add('hide-before');
+    } else {
+        // Réaffiche le ::before si la carte est refermée
+        document.querySelector('.hint-arrow').classList.remove('hide-before');
+        hintArrow.classList.remove('to-button');
+        hintArrow.textContent = 'Cliquez sur la carte';
+    }
+});
+
+    </script>
+</body>
+</html>
